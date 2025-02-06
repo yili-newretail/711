@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>City and Store List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      select,
+      button {
+        padding: 10px;
+        margin: 10px 0;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body id="body">
+    <h1>City and Store List</h1>
+    <label for="citySelect">Select a City:</label>
+    <select id="citySelect"></select>
+    <select id="countySelect"></select>
+    <ul id="storeList"></ul>
+
+    <script>
+
+          fetch(`http://localhost:3000/api/country`)
+      .then((response) => response.json())
+      .then((stores) => {
+        const citySelect = document.getElementById("citySelect");
+        const countySelect = document.getElementById("countySelect");
+
+        // 清空下拉選單
+        // 使用 Set 避免重複
+        const citySet = new Set();
+        const countySet = new Set();
+
+        stores.forEach((store) => {
+          console.log('ss',store.store);
+
+          console.log('地址',store.address);
+
+          console.log('elementHtml',store.elementHtml);
+
+          // 切割 `store.store` 和 `store.address`，確保每個選項都加入
+          store.store.split("\n").map(city => city.trim()).filter(city => city).forEach(city => citySet.add(city));
+          store.address.split("\n").map(county => county.trim()).filter(county => county).forEach(county => countySet.add(county));
+        });
+        console.log(stores[0].elementHtml);
+
+        // 填入城市選單
+        citySet.forEach((city) => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+
+        // 填入區域選單
+        countySet.forEach((county) => {
+          const option = document.createElement("option");
+          option.value = county;
+          option.textContent = county;
+          countySelect.appendChild(option);
+        });
+        document.getElementById("body").appendChild(stores[0].elementHtml);
+
+      })
+      .catch((error) => console.error("Error fetching stores:", error));
+    </script>
+  </body>
+</html>
